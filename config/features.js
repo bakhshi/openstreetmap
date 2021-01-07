@@ -5,12 +5,12 @@
 **/
 
 // default tags imported
-var tags = [
+const tags = [
   'addr:housenumber+addr:street'
 ];
 
 // tags corresponding to venues
-var venue_tags = [
+const venue_tags = [
   'amenity+name',
   'building+name',
   'shop+name',
@@ -44,7 +44,9 @@ var venue_tags = [
   'aeroway~spaceport+name',
   'aeroway~landing_strip+name',
   'aeroway~airfield+name',
-  'aeroway~airport+name'
+  'aeroway~airport+name',
+  'brand+name',
+  'healthcare+name'
 ];
 
 module.exports = {tags,venue_tags};

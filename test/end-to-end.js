@@ -9,7 +9,6 @@
 var fs = require('fs'),
     path = require('path'),
     colors = require('colors'),
-    tmp = require('tmp'),
     deep = require('deep-diff'),
     streams = require('../stream/importPipeline'),
     model = require('pelias-model'),
@@ -52,6 +51,7 @@ streams.pbfParser()
   .pipe( streams.addressExtractor() )
   .pipe( streams.categoryMapper( streams.config.categoryDefaults ) )
   .pipe( streams.addendumMapper() )
+  .pipe( streams.popularityMapper() )
   .pipe( model.createDocumentMapperStream() )
   .pipe( sink.obj(function (doc) {
     results.push(doc);
