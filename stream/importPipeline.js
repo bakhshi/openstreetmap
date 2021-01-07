@@ -19,11 +19,11 @@ streams.dbMapper = require('pelias-model').createDocumentMapperStream;
 streams.elasticsearch = require('pelias-dbclient');
 
 // default import pipeline
-streams.import = function(){
+streams.import = function(highwayList){
   streams.pbfParser()
     .pipe( streams.docConstructor() )
     .pipe( streams.tagMapper() )
-    .pipe( streams.addressExtractor() )
+    .pipe( streams.addressExtractor(highwayList) )
     .pipe( streams.blacklistStream() )
     .pipe( streams.categoryMapper( categoryDefaults ) )
     .pipe( streams.addendumMapper() )

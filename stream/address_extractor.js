@@ -39,7 +39,9 @@ function hasValidAddress( doc ){
   return true;
 }
 
-module.exports = function(){
+var currentRecord = 0;
+
+module.exports = function(highwayList){
 
   var stream = through.obj( function( doc, enc, next ) {
     var isNamedPoi = !!doc.getName('default');
@@ -68,7 +70,7 @@ module.exports = function(){
             .setCentroid( doc.getCentroid() );
 
           // copy all address properties
-          setProperties( record, doc );
+          setProperties( record, doc, highwayList, streetno );
 
           // ensure that only a single address number is used
           record.setAddress('number', streetno);
@@ -88,6 +90,9 @@ module.exports = function(){
         else {
           peliasLogger.error( '[address_extractor] failed to push address downstream' );
         }
+
+        ++currentRecord;
+        console.log("Current record : " + currentRecord);
 
       }, this);
 
@@ -119,10 +124,35 @@ module.exports = function(){
 var addrProps = [ 'name', 'number', 'street', 'zip' ];
 
 // call document setters and ignore non-fatal errors
-function setProperties( record, doc ){
+function setProperties( record, doc, highwayList, streetno ){
   addrProps.forEach( function ( prop ){
     try {
       record.setAddress( prop, doc.getAddress( prop ) );
+      if (prop === 'street') {
+        for (const highway of highwayList) {
+          if (doc.getAddress(prop) === highway.tags['name']) {
+            if (!!highway.tags['name:hy']) {
+              record.phrase['hy'] = streetno + ' ' + highway.tags['name:hy'];
+            }
+            if (!!highway.tags['name:ru']) {
+              record.phrase['ru'] = streetno + ' ' + highway.tags['name:ru'];
+            }
+            if (!!highway.tags['name:en']) {
+              record.phrase['en'] = streetno + ' ' + highway.tags['name:en'];
+            }
+            if (!!highway.tags['name:hy']) {
+              record.name['hy'] = streetno + ' ' + highway.tags['name:hy'];
+            }
+            if (!!highway.tags['name:ru']) {
+              record.name['ru'] = streetno + ' ' + highway.tags['name:ru'];
+            }
+            if (!!highway.tags['name:en']) {
+              record.name['en'] = streetno + ' ' + highway.tags['name:en'];
+            }
+          }
+        }
+      }
+
     } catch ( ex ) {}
   });
 }
